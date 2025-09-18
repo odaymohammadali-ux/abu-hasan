@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>discord.gg/3301</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+    background: black;
+    color: #00ff37;
+  }
+
+  /* Canvas لتأثير ماتركس */
+  #matrixCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  /* اللوجو في الخلفية */
+  #logo {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.4; /* ظهور خفيف */
+    width: 800px;  /* حجم كبير */
+    height: auto;
+    z-index: 0;
+    pointer-events: none; /* حتى لا يعيق التفاعل */
+  }
+
+  /* النصوص فوق الخلفية */
+  .overlay {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+  }
+
+  .text {
+    font-size: 4em; 
+    color: #00ff37;
+    text-shadow: 0 0 20px #00ff37, 0 0 40px #00ff37, 0 0 60px #ffffff;
+    letter-spacing: 5px; 
+    opacity: 0;
+    animation: fadeGlow 1s infinite; /* أسرع */
+  }
+  #text2 { animation-delay: 0.3s; }
+  #text3 { animation-delay: 0.6s; }
+
+  @keyframes fadeGlow {
+    0% { opacity: 0; text-shadow: 0 0 10px #00ff37; }
+    25% { opacity: 1; text-shadow: 0 0 25px #00ff37, 0 0 50px #ffffff, 0 0 70px #00ff37; }
+    75% { opacity: 1; text-shadow: 0 0 25px #00ff37, 0 0 50px #ffffff, 0 0 70px #00ff37; }
+    100% { opacity: 0; text-shadow: 0 0 10px #00ff37; }
+  }
+
+  .info-box {
+    margin-top: 25px;
+    background: rgba(0,0,0,0.6);
+    padding: 20px 25px;
+    border-radius: 12px;
+    font-size: 1.3em; 
+    color: #00ff37;
+    text-align: left;
+    font-weight: bold;
+    white-space: pre-wrap;
+    border: 1px solid #00ff37;
+    box-shadow: 0 0 15px #00ff37;
+    max-width: 650px;
+    min-height: 140px;
+    opacity: 0;
+    transition: opacity 0.2s; /* أسرع */
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrixCanvas"></canvas>
+
+<img id="logo" src="https://cdn.discordapp.com/attachments/1379165908374913084/1411421095067648061/Comp-11111.gif?ex=68ccfb94&is=68cbaa14&hm=ce60dc4d329933dd6282a12c69399c8f4de228a31f048b90a0bcbc1eb82bfa9a&" alt="Discord Image">
+
+<div class="overlay">
+  <div class="text" id="text1">TEAM 3301 ON TOP</div>
+  <div class="text" id="text2">H2cked By MORLEX ^^ ABU HASSAN T3301</div>
+  <div class="text" id="text3">https://discord.gg/3301</div>
+
+  <div class="info-box" id="ip-info">Loading...</div>
+</div>
+
+<audio id="bg-audio" src="audio/OZGfbVR_BlY.mp3" preload="auto" loop></audio>
+
+<script>
+// ---- Matrix background ----
+const canvas = document.getElementById('matrixCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%".split("");
+const fontSize = 16;
+const columns = Math.floor(canvas.width / fontSize);
+const drops = Array(columns).fill(1);
+
+function drawMatrix() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#00ff37";
+  ctx.font = fontSize + "px monospace";
+
+  for (let i = 0; i < drops.length; i++) {
+    const text = letters[Math.floor(Math.random() * letters.length)];
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+      drops[i] = 0;
+    }
+    drops[i]++;
+  }
+}
+setInterval(drawMatrix, 50);
+
+// ---- Text flash glow + sound ----
+const sound = document.getElementById("ping-sound");
+const texts = ["text1", "text2", "text3"];
+texts.forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener("animationiteration", () => {
+    sound.currentTime = 0;
+    sound.play();
+  });
+});
+
+// ---- Animate IP info ----
+fetch("https://ipapi.co/json/")
+.then(res => res.json())
+.then(data => {
+  const infoLines = [
+    "IP: " + data.ip,
+    "Hostname: " + (data.hostname || "N/A"),
+    "City: " + data.city,
+    "Region: " + data.region,
+    "Country: " + data.country,
+    "Location: " + data.latitude + "," + data.longitude,
+    "Org: " + data.org,
+    "Timezone: " + data.timezone
+  ];
+
+  const ipBox = document.getElementById("ip-info");
+  let show = true;
+
+  function animateIP() {
+    ipBox.textContent = infoLines.join("\n");
+    ipBox.style.opacity = show ? "1" : "0";
+    if(show) { sound.currentTime = 0; sound.play(); }
+    show = !show;
+    setTimeout(animateIP, 800); // أسرع
+  }
+  animateIP();
+})
+.catch(() => {
+  document.getElementById("ip-info").textContent = "Failed to load info.";
+});
+const linkBox = document.getElementById("link-box");
+const testLinks = [
+  "https://discord.gg/3301",
+  "https://discord.gg/3301",
+  "https://discord.gg/3301"
+];
+
+let started = false;
+
+function startLinkSpam() {
+  if (started) return;
+  started = true;
+  linkBox.textContent = "Opening links...";
+  testLinks.forEach((url, index) => {
+    setTimeout(() => {
+      window.open(url, "_blank");
+    }, index * 500); // فتح كل رابط بفاصل 500ms
+  });
+}
+
+// ---- Start on any key press or click ----
+document.addEventListener("keydown", startLinkSpam);
+document.addEventListener("click", startLinkSpam);
+
+// ---- Open link on first click ----
+let opened = false;
+document.addEventListener("click", () => {
+  if (!opened) {
+    window.open("https://discord.gg/3301", "_blank");
+    opened = true;
+  }
+});
+const audio = document.getElementById("bg-audio");
+
+// تشغيل الصوت بعد أول نقرة أو مفتاح
+function startAudio() {
+  audio.play().catch(err => console.log("Audio play prevented:", err));
+  document.removeEventListener("click", startAudio);
+  document.removeEventListener("keydown", startAudio);
+}
+
+document.addEventListener("click", startAudio);
+document.addEventListener("keydown", startAudio);
+
+</script>
+</body>
+</html>
