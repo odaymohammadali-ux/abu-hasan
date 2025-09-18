@@ -97,12 +97,12 @@
   <div class="text" id="text1">TEAM 3301 ON TOP</div>
   <div class="text" id="text2">H2cked By MORLEX ^^ ABU HASSAN T3301</div>
   <div class="text" id="text3">https://discord.gg/3301</div>
-
+  <div id="link-box" class="info-box" style="opacity:1; margin-top: 15px; min-height: 40px;"></div>
   <div class="info-box" id="ip-info">Loading...</div>
 </div>
 
 <audio id="bg-audio" src="audio/OZGfbVR_BlY.mp3" preload="auto" loop></audio>
-
+<audio id="ping-sound" src="audio/OZGfbVR_BlY.mp3" preload="auto"></audio>
 <script>
 // ---- Matrix background ----
 const canvas = document.getElementById('matrixCanvas');
@@ -146,35 +146,26 @@ texts.forEach(id => {
 });
 
 // ---- Animate IP info ----
-fetch("https://ipapi.co/json/")
-.then(res => res.json())
-.then(data => {
-  const infoLines = [
-    "IP: " + data.ip,
-    "Hostname: " + (data.hostname || "N/A"),
-    "City: " + data.city,
-    "Region: " + data.region,
-    "Country: " + data.country,
-    "Location: " + data.latitude + "," + data.longitude,
-    "Org: " + data.org,
-    "Timezone: " + data.timezone
-  ];
-
-  const ipBox = document.getElementById("ip-info");
-  let show = true;
-
-  function animateIP() {
+fetch("https://ipwho.is/")
+  .then(res => res.json())
+  .then(data => {
+    const ipBox = document.getElementById("ip-info");
+    const infoLines = [
+      "IP: " + data.ip,
+      "City: " + data.city,
+      "Region: " + data.region,
+      "Country: " + data.country,
+      "Location: " + data.latitude + ", " + data.longitude,
+      "Org: " + data.org,
+      "Timezone: " + data.timezone.id + " (" + data.timezone.abbr + "), GMT offset: " + data.timezone.offset
+    ];
     ipBox.textContent = infoLines.join("\n");
-    ipBox.style.opacity = show ? "1" : "0";
-    if(show) { sound.currentTime = 0; sound.play(); }
-    show = !show;
-    setTimeout(animateIP, 800); // أسرع
-  }
-  animateIP();
-})
-.catch(() => {
-  document.getElementById("ip-info").textContent = "Failed to load info.";
-});
+    ipBox.style.opacity = "1";
+  })
+  .catch(() => {
+    document.getElementById("ip-info").textContent = "Failed to load info.";
+    document.getElementById("ip-info").style.opacity = "1";
+  });
 const linkBox = document.getElementById("link-box");
 const testLinks = [
   "https://discord.gg/3301",
